@@ -7,11 +7,13 @@ import palmerpenguins
 
 df = palmerpenguins.load_penguins()
 
-ui.page_opts(title="Penguins dashboard", fillable=True)
+ui.page_opts(title="Jose Guzman's Penguins Dashboard 🐧🐧🐧", fillable=True)
 
-
-with ui.sidebar(title="Filter controls"):
+#Sidebar Menu 
+with ui.sidebar(title="🐧Penguin controls"):
+    #Slider for user to input Mass desired. 
     ui.input_slider("mass", "Mass", 2000, 6000, 6000)
+    #Checbox to allow user to check off the type of species. 
     ui.input_checkbox_group(
         "species",
         "Species",
@@ -22,17 +24,17 @@ with ui.sidebar(title="Filter controls"):
     ui.h6("Links")
     ui.a(
         "GitHub Source",
-        href="https://github.com/denisecase/cintel-07-tdash",
+        href="https://github.com/jg2012/cintel-07-tdash",
         target="_blank",
     )
     ui.a(
         "GitHub App",
-        href="https://denisecase.github.io/cintel-07-tdash/",
+        href="https://github.com/jg2012/cintel-07-tdash/blob/main/app/app.py",
         target="_blank",
     )
     ui.a(
         "GitHub Issues",
-        href="https://github.com/denisecase/cintel-07-tdash/issues",
+        href="https://github.com/jg2012/cintel-07-tdash/issues",
         target="_blank",
     )
     ui.a("PyShiny", href="https://shiny.posit.co/py/", target="_blank")
@@ -49,20 +51,21 @@ with ui.sidebar(title="Filter controls"):
 
 
 with ui.layout_column_wrap(fill=False):
+    #Shows Number of Penguins
     with ui.value_box(showcase=icon_svg("earlybirds")):
         "Number of penguins"
 
         @render.text
         def count():
             return filtered_df().shape[0]
-
+    #Shows Average bill length
     with ui.value_box(showcase=icon_svg("ruler-horizontal")):
         "Average bill length"
 
         @render.text
         def bill_length():
             return f"{filtered_df()['bill_length_mm'].mean():.1f} mm"
-
+    #Shows Average bill depth  
     with ui.value_box(showcase=icon_svg("ruler-vertical")):
         "Average bill depth"
 
@@ -71,7 +74,9 @@ with ui.layout_column_wrap(fill=False):
             return f"{filtered_df()['bill_depth_mm'].mean():.1f} mm"
 
 
+
 with ui.layout_columns():
+    # Plots Bill Length and depth
     with ui.card(full_screen=True):
         ui.card_header("Bill length and depth")
 
@@ -82,10 +87,12 @@ with ui.layout_columns():
                 x="bill_length_mm",
                 y="bill_depth_mm",
                 hue="species",
+                style="species",  # Add markers based on species
+                markers=["o", "s", "D"]  # Specify markers for each species
             )
-
+    # Data Table
     with ui.card(full_screen=True):
-        ui.card_header("Penguin da")
+        ui.card_header("Penguin Data")
 
         @render.data_frame
         def summary_statistics():
@@ -99,9 +106,10 @@ with ui.layout_columns():
             return render.DataGrid(filtered_df()[cols], filters=True)
 
 
+
 #ui.include_css(app_dir / "styles.css")
 
-
+#Filters data and reacts to user input. 
 @reactive.calc
 def filtered_df():
     filt_df = df[df["species"].isin(input.species())]
